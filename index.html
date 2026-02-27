@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caffè La Piazzetta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --espresso: #2C1A0E;
+      --crema: #F5ECD7;
+      --caramel: #8B5E3C;
+      --gold: #C9A84C;
+      --warm-white: #FBF6EE;
+      --dark-brown: #1A0F07;
+      --light-crema: #FAF4E8;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: var(--warm-white);
+      color: var(--espresso);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.5;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(44,26,14,0.97); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 64px;
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+    }
+    .nav-logo { font-family:'Playfair Display',serif; font-style:italic; color:var(--gold); font-size:1.4rem; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.15em;
+      color:var(--crema); text-decoration:none; text-transform:uppercase; opacity:0.85;
+      transition:opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity:1; color:var(--gold); }
+    .nav-admin-btn {
+      font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em;
+      color:rgba(201,168,76,0.5); background:none; border:1px solid rgba(201,168,76,0.2);
+      padding:0.35rem 0.8rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase;
+    }
+    .nav-admin-btn:hover { color:var(--gold); border-color:rgba(201,168,76,0.5); }
+
+    /* HERO */
+    .hero {
+      height:100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      position:relative; background:var(--espresso); overflow:hidden; text-align:center;
+    }
+    .hero-bg {
+      position:absolute; inset:0;
+      background:radial-gradient(ellipse at 30% 60%,rgba(139,94,60,0.35) 0%,transparent 60%),
+                 radial-gradient(ellipse at 80% 30%,rgba(201,168,76,0.12) 0%,transparent 50%);
+    }
+    .hero-lines {
+      position:absolute; inset:0;
+      background-image:repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(201,168,76,0.06) 80px);
+    }
+    .hero-content { position:relative; z-index:2; }
+    .hero-sub { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.35em; color:var(--gold); text-transform:uppercase; margin-bottom:1.5rem; opacity:0; animation:fadeUp 1s 0.3s ease both; }
+    .hero-title { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(3.5rem,9vw,7rem); color:var(--crema); line-height:1.05; opacity:0; animation:fadeUp 1s 0.5s ease both; }
+    .hero-title span { color:var(--gold); }
+    .hero-divider { width:80px; height:1px; background:var(--gold); margin:2rem auto; opacity:0; animation:fadeUp 1s 0.7s ease both; }
+    .hero-tagline { font-size:1.1rem; font-style:italic; color:rgba(245,236,215,0.7); letter-spacing:0.05em; opacity:0; animation:fadeUp 1s 0.9s ease both; }
+    .hero-scroll { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:rgba(201,168,76,0.6); font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; animation:bounce 2s infinite; }
+    .hero-scroll::after { content:''; display:block; width:1px; height:40px; background:linear-gradient(to bottom,var(--gold),transparent); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* SECTIONS */
+    section { padding:7rem 2rem; }
+    .section-inner { max-width:900px; margin:0 auto; }
+    .section-label { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; }
+    .section-title { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3rem); font-style:italic; margin-bottom:1rem; color:var(--espresso); }
+    .section-rule { width:50px; height:1px; background:var(--gold); margin-bottom:3rem; }
+
+    /* ORARI */
+    #orari { background:var(--light-crema); border-top:1px solid rgba(139,94,60,0.15); border-bottom:1px solid rgba(139,94,60,0.15); }
+    .orari-grid { border:1px solid rgba(139,94,60,0.2); border-radius:2px; }
+    .orari-row { display:flex; justify-content:space-between; align-items:center; padding:1.1rem 1.8rem; border-bottom:1px solid rgba(139,94,60,0.1); transition:background 0.2s; }
+    .orari-row:last-child { border-bottom:none; }
+    .orari-row:hover { background:rgba(139,94,60,0.05); }
+    .orari-row.chiuso { opacity:0.45; }
+    .orari-row.highlight { background:rgba(201,168,76,0.08); }
+    .orari-row.highlight .orari-time { color:var(--espresso); font-weight:700; }
+    .orari-day { font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; }
+    .orari-time { font-family:'Playfair Display',serif; font-size:1rem; color:var(--caramel); }
+    .badge { display:inline-block; font-family:'Cinzel',serif; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); border:1px solid var(--gold); padding:0.18rem 0.45rem; margin-left:0.7rem; }
+    .orari-note { margin-top:1.5rem; font-style:italic; font-size:0.88rem; color:var(--caramel); border-left:2px solid var(--gold); padding-left:1rem; line-height:1.7; }
+    .services-row { display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:2rem; }
+    .service-tag { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; border:1px solid rgba(139,94,60,0.3); padding:0.45rem 0.9rem; color:var(--caramel); }
+
+    /* MENU */
+    #menu { background:var(--warm-white); }
+    .menu-tabs { display:flex; margin-bottom:3rem; border-bottom:1px solid rgba(139,94,60,0.2); overflow-x:auto; }
+    .menu-tab { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--caramel); padding:0.8rem 1.3rem; cursor:pointer; border:none; border-bottom:2px solid transparent; background:none; transition:all 0.2s; white-space:nowrap; }
+    .menu-tab:hover { color:var(--espresso); }
+    .menu-tab.active { color:var(--espresso); border-bottom-color:var(--gold); }
+    .menu-panel { display:none; }
+    .menu-panel.active { display:block; animation:fadeUp 0.35s ease; }
+    .menu-category { margin-bottom:2.5rem; }
+    .menu-category-title { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); border-bottom:1px solid rgba(201,168,76,0.3); padding-bottom:0.5rem; margin-bottom:1.2rem; display:flex; justify-content:space-between; align-items:center; }
+    .menu-item { display:flex; justify-content:space-between; align-items:baseline; padding:0.6rem 0; border-bottom:1px dashed rgba(139,94,60,0.12); gap:1rem; }
+    .menu-item:last-child { border-bottom:none; }
+    .menu-item-name { font-size:1rem; color:var(--espresso); line-height:1.3; }
+    .menu-item-detail { font-size:0.82rem; font-style:italic; color:var(--caramel); margin-top:0.1rem; }
+    .menu-item-price { font-family:'Playfair Display',serif; font-size:0.95rem; color:var(--caramel); white-space:nowrap; }
+    .menu-sub-label { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.15em; color:var(--caramel); margin:0.8rem 0 0.3rem; text-transform:uppercase; }
+    .menu-note { background:rgba(201,168,76,0.08); border-left:2px solid var(--gold); padding:0.8rem 1rem; font-size:0.88rem; font-style:italic; color:var(--caramel); margin-bottom:1.5rem; line-height:1.6; }
+    .menu-set { background:var(--light-crema); border:1px solid rgba(201,168,76,0.25); border-radius:2px; padding:1.5rem; margin-top:1rem; }
+    .menu-set h4 { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--espresso); margin-bottom:0.8rem; }
+    .menu-set-item { display:flex; justify-content:space-between; padding:0.45rem 0; font-size:0.95rem; border-bottom:1px solid rgba(139,94,60,0.1); }
+    .menu-set-item:last-child { border-bottom:none; }
+    .menu-set-item span:last-child { font-family:'Playfair Display',serif; color:var(--caramel); }
+    .menu-set-detail { font-size:0.78rem; font-style:italic; color:var(--caramel); }
+    .aperitivo-banner { background:var(--espresso); color:var(--crema); border-radius:2px; padding:2rem; margin-bottom:2rem; display:flex; flex-wrap:wrap; gap:1rem; align-items:center; justify-content:space-between; }
+    .aperitivo-banner h3 { font-family:'Playfair Display',serif; font-style:italic; font-size:1.6rem; color:var(--gold); }
+    .aperitivo-banner p { font-size:0.9rem; opacity:0.8; max-width:280px; font-style:italic; }
+    .aperitivo-price { font-family:'Cinzel',serif; font-size:1.8rem; color:var(--gold); }
+    .aperitivo-price small { font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; opacity:0.7; display:block; }
+
+    /* CONTATTI */
+    #contatti { background:var(--espresso); color:var(--crema); }
+    #contatti .section-title { color:var(--crema); }
+    .contatti-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:1rem; }
+    .contatto-block h3 { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(201,168,76,0.3); }
+    .contatto-block p { font-size:1rem; line-height:1.9; color:rgba(245,236,215,0.8); font-style:italic; }
+    .contatto-block a { color:var(--gold); text-decoration:none; }
+    .contatto-block a:hover { text-decoration:underline; }
+    .social-links { display:flex; gap:1rem; margin-top:1.5rem; }
+    .social-link { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--crema); border:1px solid rgba(245,236,215,0.3); padding:0.55rem 1rem; text-decoration:none; transition:all 0.2s; }
+    .social-link:hover { background:var(--gold); color:var(--espresso); border-color:var(--gold); }
+    .compleanno-box { margin-top:0; padding:1.5rem; border:1px solid rgba(201,168,76,0.3); border-radius:2px; grid-column:1/-1; }
+    .compleanno-box h3 { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; }
+    .compleanno-box p { font-size:0.95rem; color:rgba(245,236,215,0.75); font-style:italic; line-height:1.7; }
+
+    footer { background:var(--dark-brown); color:rgba(245,236,215,0.35); text-align:center; padding:2rem; font-size:0.78rem; font-style:italic; }
+
+    /* ═══════════════════ ADMIN PANEL ═══════════════════ */
+    .admin-overlay { display:none; position:fixed; inset:0; z-index:9000; background:rgba(26,15,7,0.93); backdrop-filter:blur(6px); overflow-y:auto; padding:2rem 1rem; }
+    .admin-overlay.open { display:block; }
+    .admin-panel { max-width:880px; margin:0 auto; background:#1e100a; border:1px solid rgba(201,168,76,0.3); border-radius:4px; padding:2.5rem; }
+    .admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; border-bottom:1px solid rgba(201,168,76,0.2); padding-bottom:1.5rem; }
+    .admin-header h2 { font-family:'Playfair Display',serif; font-style:italic; color:var(--gold); font-size:1.6rem; }
+    .admin-close { background:none; border:1px solid rgba(201,168,76,0.3); color:var(--gold); font-size:1.1rem; width:36px; height:36px; cursor:pointer; border-radius:2px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .admin-close:hover { background:rgba(201,168,76,0.1); }
+
+    /* login */
+    .admin-login { text-align:center; padding:3rem 0; }
+    .admin-login h3 { font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:2rem; }
+    .admin-login input { display:block; margin:0 auto 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(201,168,76,0.3); color:var(--crema); font-size:1rem; padding:0.7rem 1.2rem; width:260px; border-radius:2px; font-family:inherit; letter-spacing:0.1em; text-align:center; }
+    .admin-login input:focus { outline:none; border-color:var(--gold); }
+    .admin-btn { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; background:var(--gold); color:var(--espresso); border:none; padding:0.7rem 1.8rem; cursor:pointer; border-radius:2px; transition:opacity 0.2s; }
+    .admin-btn:hover { opacity:0.85; }
+    .admin-btn.secondary { background:none; color:var(--gold); border:1px solid rgba(201,168,76,0.4); }
+    .admin-error { color:#c95555; font-size:0.85rem; margin-top:0.8rem; font-style:italic; }
+
+    /* tabs */
+    .admin-tabs { display:flex; gap:0.4rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .admin-tab-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; background:none; border:1px solid rgba(201,168,76,0.2); color:rgba(245,236,215,0.5); padding:0.4rem 0.9rem; cursor:pointer; border-radius:2px; transition:all 0.2s; }
+    .admin-tab-btn.active { background:rgba(201,168,76,0.12); color:var(--gold); border-color:rgba(201,168,76,0.5); }
+    .admin-sub { display:none; }
+    .admin-sub.active { display:block; animation:fadeUp 0.25s ease; }
+
+    /* form elements */
+    .admin-section { margin-bottom:2rem; }
+    .admin-section-title { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; border-bottom:1px solid rgba(201,168,76,0.2); padding-bottom:0.5rem; }
+    .admin-field { margin-bottom:0.9rem; }
+    .admin-field label { display:block; font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(245,236,215,0.45); margin-bottom:0.3rem; }
+    .admin-field input, .admin-field textarea, .admin-field select { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(201,168,76,0.2); color:var(--crema); font-size:0.92rem; padding:0.55rem 0.8rem; border-radius:2px; font-family:inherit; transition:border-color 0.2s; }
+    .admin-field input:focus, .admin-field textarea:focus { outline:none; border-color:var(--gold); }
+    .admin-field textarea { resize:vertical; min-height:60px; }
+    .admin-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+
+    /* item rows */
+    .admin-items { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.8rem; }
+    .admin-item-row { display:grid; gap:0.4rem; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(201,168,76,0.08); padding:0.5rem 0.7rem; border-radius:2px; }
+    .admin-item-row.cols-3 { grid-template-columns:1fr 1.2fr auto; }
+    .admin-item-row.cols-4 { grid-template-columns:1fr 1fr 80px auto; }
+    .admin-item-row input { background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.12); color:var(--crema); font-size:0.87rem; padding:0.35rem 0.6rem; border-radius:2px; font-family:inherit; width:100%; }
+    .admin-item-row input:focus { outline:none; border-color:rgba(201,168,76,0.5); }
+    .admin-item-del { background:none; border:none; color:rgba(200,80,80,0.5); cursor:pointer; font-size:1rem; padding:0.2rem 0.4rem; transition:color 0.2s; }
+    .admin-item-del:hover { color:#c95555; }
+    .admin-add-row { display:flex; gap:0.4rem; flex-wrap:wrap; }
+    .admin-add-row input { flex:1; min-width:110px; background:rgba(255,255,255,0.05); border:1px solid rgba(201,168,76,0.15); color:var(--crema); font-size:0.87rem; padding:0.4rem 0.6rem; border-radius:2px; font-family:inherit; }
+    .admin-add-row input:focus { outline:none; border-color:var(--gold); }
+    .admin-add-btn { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; background:none; border:1px solid rgba(201,168,76,0.3); color:var(--gold); padding:0.4rem 0.8rem; cursor:pointer; border-radius:2px; white-space:nowrap; transition:all 0.2s; }
+    .admin-add-btn:hover { background:rgba(201,168,76,0.1); }
+    .orari-admin-row { display:grid; grid-template-columns:130px 1fr auto auto; gap:0.4rem; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(201,168,76,0.08); padding:0.5rem 0.7rem; border-radius:2px; margin-bottom:0.35rem; }
+    .orari-admin-row input[type=text] { background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.12); color:var(--crema); font-size:0.87rem; padding:0.35rem 0.6rem; border-radius:2px; font-family:inherit; width:100%; }
+    .orari-admin-row input[type=text]:focus { outline:none; border-color:rgba(201,168,76,0.5); }
+    .orari-check-label { display:flex; align-items:center; gap:0.3rem; color:rgba(245,236,215,0.45); font-size:0.68rem; font-family:'Cinzel',serif; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap; cursor:pointer; }
+
+    .admin-footer { display:flex; justify-content:space-between; align-items:center; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(201,168,76,0.2); flex-wrap:wrap; gap:1rem; }
+    .save-status { font-style:italic; font-size:0.85rem; color:rgba(201,168,76,0.6); transition:color 0.3s; }
+    .save-status.ok { color:#5aad72; }
+
+    /* responsive */
+    @media(max-width:640px) {
+      nav { padding:0 1rem; }
+      .nav-links { gap:0.8rem; }
+      .nav-links a { font-size:0.58rem; letter-spacing:0.1em; }
+      .contatti-grid { grid-template-columns:1fr; }
+      .admin-grid2 { grid-template-columns:1fr; }
+      .orari-admin-row { grid-template-columns:1fr 1fr auto auto; }
+      .orari-row { padding:0.9rem 1rem; }
+      .admin-item-row.cols-4 { grid-template-columns:1fr 80px auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">La Piazzetta</div>
+  <ul class="nav-links">
+    <li><a href="#orari">Orari</a></li>
+    <li><a href="#menu">Menù</a></li>
+    <li><a href="#contatti">Contatti</a></li>
+  </ul>
+  <button class="nav-admin-btn" onclick="openAdminLogin()">&#9965; Admin</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <p class="hero-sub">sempre orario continuato</p>
+    <h1 class="hero-title">Caffè<br><span>La Piazzetta</span></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">Un luogo dove il tempo rallenta, e il caffè profuma di casa.</p>
+  </div>
+  <div class="hero-scroll">Scopri</div>
+</section>
+
+<!-- ORARI -->
+<section id="orari">
+  <div class="section-inner">
+    <p class="section-label">Quando trovarci</p>
+    <h2 class="section-title">Orari di Apertura</h2>
+    <div class="section-rule"></div>
+    <div class="orari-grid" id="orari-table"></div>
+    <p class="orari-note" id="orari-note-display" style="display:none"></p>
+    <div class="services-row">
+      <span class="service-tag">&#9749; Colazioni</span>
+      <span class="service-tag">&#127860; Pausa Pranzo</span>
+      <span class="service-tag">&#127838; Merende</span>
+      <span class="service-tag">&#127865; Aperitivi</span>
+      <span class="service-tag">&#127874; Feste di Compleanno</span>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="section-inner">
+    <p class="section-label">La nostra proposta</p>
+    <h2 class="section-title">Il Menù</h2>
+    <div class="section-rule"></div>
+    <div class="menu-tabs" id="menu-tabs-bar"></div>
+    <div id="menu-panels"></div>
+  </div>
+</section>
+
+<!-- CONTATTI -->
+<section id="contatti">
+  <div class="section-inner">
+    <p class="section-label">Dove siamo</p>
+    <h2 class="section-title">Contatti</h2>
+    <div class="section-rule" style="background:var(--gold)"></div>
+    <div class="contatti-grid">
+      <div class="contatto-block">
+        <h3>Indirizzo</h3>
+        <p id="ct-indirizzo-display"></p>
+        <div class="social-links">
+          <a id="ct-fb-link" href="#" class="social-link" target="_blank">Facebook</a>
+          <a id="ct-ig-link" href="#" class="social-link" target="_blank">Instagram</a>
+        </div>
+      </div>
+      <div class="contatto-block">
+        <h3>Recapiti</h3>
+        <p id="ct-recapiti-display"></p>
+      </div>
+      <div class="compleanno-box">
+        <h3>&#127874; Feste di Compleanno</h3>
+        <p>Si organizzano feste di compleanno ad orari di merenda o aperitivo. Contattaci per maggiori informazioni e prenotazioni.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Caffè La Piazzetta &mdash; Tutti i diritti riservati</p>
+</footer>
+
+<!-- ══════════════ ADMIN OVERLAY ══════════════ -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h2>Pannello Admin</h2>
+      <button class="admin-close" onclick="closeAdmin()">&#10005;</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="admin-login-screen">
+      <div class="admin-login">
+        <h3>Accesso riservato</h3>
+        <input type="password" id="admin-pw-input" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" onkeydown="if(event.key==='Enter')checkPw()">
+        <br><br>
+        <button class="admin-btn" onclick="checkPw()">Accedi</button>
+        <p class="admin-error" id="admin-pw-error" style="display:none">Password errata.</p>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="admin-content" style="display:none">
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" onclick="aTab('orari',this)">Orari</button>
+        <button class="admin-tab-btn" onclick="aTab('caff',this)">Caffetteria</button>
+        <button class="admin-tab-btn" onclick="aTab('te',this)">Tè & Tisane</button>
+        <button class="admin-tab-btn" onclick="aTab('dolci',this)">Dolci</button>
+        <button class="admin-tab-btn" onclick="aTab('pranzo',this)">Pranzo</button>
+        <button class="admin-tab-btn" onclick="aTab('aperitivo',this)">Aperitivo</button>
+        <button class="admin-tab-btn" onclick="aTab('contatti',this)">Contatti</button>
+      </div>
+
+      <!-- TAB ORARI -->
+      <div class="admin-sub active" id="asub-orari">
+        <div class="admin-section">
+          <div class="admin-section-title">Giorni e orari</div>
+          <div id="orari-admin-list"></div>
+          <div class="admin-field" style="margin-top:1rem">
+            <label>Nota sotto gli orari</label>
+            <textarea id="admin-orari-note" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CAFFETTERIA -->
+      <div class="admin-sub" id="asub-caff">
+        <div class="admin-section">
+          <div class="admin-section-title">Voci caffetteria</div>
+          <div class="admin-items" id="list-caffetteria"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-caff-name" placeholder="Nome">
+            <input type="text" id="a-caff-detail" placeholder="Descrizione (opz.)">
+            <input type="text" id="a-caff-price" placeholder="Prezzo" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('caffetteria')">+ Aggiungi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB TE -->
+      <div class="admin-sub" id="asub-te">
+        <div class="admin-section">
+          <div class="admin-section-title">Tè e Tisane</div>
+          <div class="admin-field" style="margin-bottom:1rem">
+            <label>Prezzo unico (es. € 3,00)</label>
+            <input type="text" id="admin-te-prezzo" style="max-width:140px" placeholder="€ 3,00">
+          </div>
+          <div class="admin-items" id="list-te"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-te-name" placeholder="Nome tè / tisana">
+            <input type="text" id="a-te-price" placeholder="Prezzo ind. (opz.)" style="max-width:130px">
+            <button class="admin-add-btn" onclick="addItem('te')">+ Aggiungi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB DOLCI -->
+      <div class="admin-sub" id="asub-dolci">
+        <div class="admin-section">
+          <div class="admin-section-title">Dolci & Brioches</div>
+          <div class="admin-items" id="list-dolci"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-dolci-name" placeholder="Nome">
+            <input type="text" id="a-dolci-detail" placeholder="Descrizione (opz.)">
+            <input type="text" id="a-dolci-price" placeholder="Prezzo" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('dolci')">+ Aggiungi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PRANZO -->
+      <div class="admin-sub" id="asub-pranzo">
+        <div class="admin-section">
+          <div class="admin-section-title">Sandwich, Toast & Pizza</div>
+          <div class="admin-items" id="list-pf"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-pf-name" placeholder="Nome">
+            <input type="text" id="a-pf-detail" placeholder="Varianti">
+            <input type="text" id="a-pf-price" placeholder="€" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('pf')">+ Aggiungi</button>
+          </div>
+        </div>
+        <div class="admin-section" style="margin-top:1.5rem">
+          <div class="admin-section-title">Insalatone</div>
+          <div class="admin-items" id="list-ins"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-ins-name" placeholder="Nome insalata">
+            <input type="text" id="a-ins-detail" placeholder="Ingredienti">
+            <input type="text" id="a-ins-price" placeholder="€" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('ins')">+ Aggiungi</button>
+          </div>
+        </div>
+        <div class="admin-section" style="margin-top:1.5rem">
+          <div class="admin-section-title">Piatti caldi – Menù settimana</div>
+          <p style="font-size:0.8rem;font-style:italic;color:rgba(245,236,215,0.4);margin-bottom:0.8rem">Usa "Primo" o "Secondo" nel campo categoria per raggruppare automaticamente.</p>
+          <div class="admin-items" id="list-caldi"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-pc-name" placeholder="Piatto">
+            <input type="text" id="a-pc-detail" placeholder="Primo / Secondo">
+            <input type="text" id="a-pc-price" placeholder="€ (opz.)" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('caldi')">+ Aggiungi</button>
+          </div>
+        </div>
+        <div class="admin-section" style="margin-top:1.5rem">
+          <div class="admin-section-title">Bevande pranzo</div>
+          <div class="admin-items" id="list-bev"></div>
+          <div class="admin-add-row">
+            <input type="text" id="a-bev-name" placeholder="Bevanda">
+            <input type="text" id="a-bev-price" placeholder="€" style="max-width:90px">
+            <button class="admin-add-btn" onclick="addItem('bev')">+ Aggiungi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB APERITIVO -->
+      <div class="admin-sub" id="asub-aperitivo">
+        <div class="admin-section">
+          <div class="admin-section-title">Aperitivo Ricco – Info</div>
+          <div class="admin-grid2">
+            <div class="admin-field"><label>Giorno / orario</label><input type="text" id="admin-ap-giorno"></div>
+            <div class="admin-field"><label>Prezzo prima consumazione</label><input type="text" id="admin-ap-prezzo"></div>
+          </div>
+          <div class="admin-field"><label>Descrizione</label><textarea id="admin-ap-desc" rows="4"></textarea></div>
+        </div>
+      </div>
+
+      <!-- TAB CONTATTI -->
+      <div class="admin-sub" id="asub-contatti">
+        <div class="admin-section">
+          <div class="admin-section-title">Informazioni</div>
+          <div class="admin-field"><label>Indirizzo (una riga per linea)</label><textarea id="admin-ct-indirizzo" rows="3"></textarea></div>
+          <div class="admin-grid2">
+            <div class="admin-field"><label>Telefono</label><input type="text" id="admin-ct-tel"></div>
+            <div class="admin-field"><label>Email</label><input type="text" id="admin-ct-email"></div>
+          </div>
+          <div class="admin-grid2">
+            <div class="admin-field"><label>URL Facebook</label><input type="text" id="admin-ct-fb"></div>
+            <div class="admin-field"><label>URL Instagram</label><input type="text" id="admin-ct-ig"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-footer">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <button class="admin-btn" onclick="saveAll()">&#128190; Salva tutto</button>
+          <button class="admin-btn secondary" onclick="closeAdmin()">Chiudi</button>
+        </div>
+        <span class="save-status" id="save-status"></span>
+      </div>
+    </div><!-- /admin-content -->
+  </div>
+</div><!-- /admin-overlay -->
+
+<script>
+/* ════════════════════ DATA ════════════════════ */
+const ADMIN_PW = 'piazzetta2025'; // ← modifica qui la password
+
+const DEFAULTS = {
+  orari: [
+    {g:'Lunedì',    t:'7:30 – 18:00', chiuso:false, hl:false},
+    {g:'Martedì',   t:'7:30 – 18:00', chiuso:false, hl:false},
+    {g:'Mercoledì', t:'7:30 – 18:00', chiuso:false, hl:false},
+    {g:'Giovedì',   t:'7:30 – 18:00', chiuso:false, hl:false},
+    {g:'Venerdì',   t:'7:30 – 20:00', chiuso:false, hl:true},
+    {g:'Sabato',    t:'8:00 – 14:00', chiuso:false, hl:false},
+    {g:'Domenica',  t:'Chiuso',       chiuso:true,  hl:false},
+  ],
+  orariNote: '* Sempre orario continuato. Il Venerdì dalle 18:00 alle 20:00: Aperitivo Ricco servito al tavolo. Prenotazione consigliata.',
+  caffetteria: [
+    {n:'Caffè',                     d:'',                           p:'€ 1,30'},
+    {n:'Caffè Decaffeinato',        d:'',                           p:'€ 1,40'},
+    {n:'Cappuccino',                d:'',                           p:'€ 1,80'},
+    {n:'Cappuccino Decaffeinato',   d:'',                           p:'€ 1,90'},
+    {n:'Cappuccino di Soja',        d:'',                           p:'€ 2,00'},
+    {n:'Marocchino',                d:'',                           p:'€ 1,70'},
+    {n:'Ginseng Piccolo',           d:'',                           p:'€ 1,50'},
+    {n:'Ginseng Grande',            d:'',                           p:'€ 1,70'},
+    {n:'Orzo Piccolo',              d:'',                           p:'€ 1,50'},
+    {n:'Orzo Grande',               d:'',                           p:'€ 1,70'},
+    {n:'Tè Caldo',                  d:'selezione tè e tisane',      p:'€ 3,00'},
+    {n:'Cioccolata Calda',          d:'',                           p:'€ 3,50'},
+    {n:'Spremuta',                  d:'',                           p:'€ 4,80'},
+    {n:'Bibite / Succhi di Frutta', d:'',                           p:'€ 3,80'},
+  ],
+  tePrezzoUnico: '€ 3,00',
+  te: [
+    {n:'Tè English Breakfast',              p:''},
+    {n:'Tè Nero al Bergamotto',             p:''},
+    {n:'Tè Nero allo Zenzero',              p:''},
+    {n:'Tè Nero ai Frutti Rossi',           p:''},
+    {n:'Tè Verde Bio',                      p:''},
+    {n:'Tè Verde alla Menta',               p:''},
+    {n:'Camomilla',                         p:''},
+    {n:'Infuso Arancia, Cannella, Vaniglia', p:''},
+    {n:'Infuso Finocchio e Liquirizia',      p:''},
+  ],
+  dolci: [
+    {n:'Brioches',                     d:'Farcite al momento',                              p:''},
+    {n:'Bigusto',                      d:'Doppia farcitura',                                p:'+ € 0,20'},
+    {n:'Mini Red Velvet',              d:'',                                                p:'€ 1,50'},
+    {n:'Biscottini di Frolla Assortiti',d:'',                                               p:'€ 0,90'},
+    {n:'Baci di Dama',                 d:'',                                                p:'€ 1,00'},
+    {n:'Barchette di Frolla',          d:'Albicocca / Gianduia / Cioccolato Bianco',        p:'€ 1,30'},
+    {n:'Mezzelune di Frolla',          d:'Ripiene di Albicocca',                            p:'€ 1,50'},
+    {n:'Mini Muffin',                  d:'Albicocca / Cacao',                               p:'€ 1,30'},
+    {n:'Ciambelle Farcite e Glassate', d:'Crema / Nocciola / Frutti di Bosco / Lamponi',    p:'€ 2,80'},
+    {n:'Chiacchiere Glassate',         d:'',                                                p:'€ 1,50'},
+    {n:'Mascherine Glassate',          d:'',                                                p:'€ 2,50'},
+    {n:'Gocce con Crema Chantilly',    d:'',                                                p:'€ 1,20'},
+  ],
+  pf: [
+    {n:'Toast Piccolo',               d:'Liscio / Farcito',                                           p:'€ 3,50 / 4,00'},
+    {n:'Toast Grande',                d:'Liscio / Farcito',                                           p:'€ 7,00'},
+    {n:'Trancio di Pizza Margherita', d:'Con origano',                                                p:'€ 6,00'},
+    {n:'Piadina / Panino – Delicata', d:'Prosciutto cotto, insalata, tonno, salsa rosa',             p:'€ 7,00'},
+    {n:'Piadina / Panino – Saporita', d:'Prosciutto crudo, rucola, brie, paté di olive',            p:'€ 7,00'},
+    {n:'Piadina / Panino – Vegetariana',d:'Insalata, pomodoro, origano, Edamer, maionese',          p:'€ 7,00'},
+    {n:'Piadina / Panino – Montanara',d:'Speck, brie, salsa ai funghi',                             p:'€ 7,00'},
+  ],
+  ins: [
+    {n:'Ortolana',    d:'Insalata, rucola, pomodori, finocchi, olive verdi',        p:'€ 8,00'},
+    {n:'Contadina',   d:'Insalata, rucola, pomodori, finocchi, mais, mozzarella',   p:'€ 8,00'},
+    {n:'Mediterranea',d:'Insalata, rucola, mais, tonno, alici, olive verdi',        p:'€ 8,00'},
+    {n:'Isolana',     d:'Finocchi, arance, olive verdi, tonno, citronette',         p:'€ 8,00'},
+  ],
+  caldi: [
+    {n:'Risotto allo Zafferano',         d:'Primo',   p:''},
+    {n:'Tagliatelle al Ragù',            d:'Primo',   p:''},
+    {n:'Pennette al Salmone Fumé',       d:'Primo',   p:''},
+    {n:'Zuppa di Farro, Orzo e Legumi',  d:'Primo',   p:''},
+    {n:'Basmati e Mazzancolle al Curry', d:'Secondo', p:''},
+    {n:'Cous Cous alle Verdure',         d:'Secondo', p:''},
+    {n:'Cotoletta di Pollo con Patate',  d:'Secondo', p:''},
+  ],
+  bev: [
+    {n:'Acqua 0,5 L',                  p:'€ 1,20'},
+    {n:'Bibite e Succhi di Frutta',    p:'€ 3,00 / 3,50'},
+    {n:'Spremuta',                     p:'€ 4,00'},
+    {n:'Calice di Vino',               p:'€ 4,00 / 5,00'},
+    {n:'Birre in Bottiglia 0,33 L',    p:'€ 3,50 / 4,80'},
+    {n:'Birre Artigianali 0,375 L',    p:'€ 6,00'},
+    {n:'Birra alla Spina',             p:'piccola € 3,00 / media € 5,00'},
+    {n:'Spritz / Cocktails',           p:'€ 6,00 / 8,00'},
+  ],
+  aperitivo: {
+    giorno: 'Tutti i Venerdì dalle 18:00 alle 20:00',
+    prezzo: '€ 10,00',
+    desc:   'Aperitivo Ricco servito al tavolo. Il buffet varia ogni settimana con una selezione ricca di stuzzichini, tartine e sfiziosità della casa. La prenotazione è consigliata per assicurarsi un tavolo.'
+  },
+  contatti: {
+    indirizzo: 'Caffè La Piazzetta\n— Inserire indirizzo —',
+    tel: '+39 000 000 0000',
+    email: 'info@caffelapiazzetta.it',
+    fb: '#',
+    ig: '#'
+  }
+};
+
+/* ════════════════════ STATE ════════════════════ */
+let S = (function(){
+  try { const r = localStorage.getItem('lp_v2'); return r ? JSON.parse(r) : deepClone(DEFAULTS); }
+  catch(e){ return deepClone(DEFAULTS); }
+})();
+
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+function persist(){ localStorage.setItem('lp_v2', JSON.stringify(S)); }
+
+/* ════════════════════ RENDER SITE ════════════════════ */
+function renderSite(){ renderOrari(); renderMenu(); renderContatti(); }
+
+/* --- ORARI --- */
+function renderOrari(){
+  document.getElementById('orari-table').innerHTML = S.orari.map(r=>`
+    <div class="orari-row${r.chiuso?' chiuso':''}${r.hl?' highlight':''}">
+      <span class="orari-day">${h(r.g)}${r.hl?'<span class="badge">Aperitivo</span>':''}</span>
+      <span class="orari-time">${h(r.t)}</span>
+    </div>`).join('');
+  const nd = document.getElementById('orari-note-display');
+  if(S.orariNote){ nd.textContent = S.orariNote; nd.style.display='block'; }
+  else nd.style.display='none';
+}
+
+/* --- MENU --- */
+function renderMenu(){
+  const tabs = [
+    {id:'caffetteria', label:'Caffetteria'},
+    {id:'te',          label:'Tè & Tisane'},
+    {id:'dolci',       label:'Dolci & Brioches'},
+    {id:'pranzo',      label:'Pausa Pranzo'},
+    {id:'aperitivo',   label:'Aperitivo'},
+  ];
+  document.getElementById('menu-tabs-bar').innerHTML = tabs.map((t,i)=>
+    `<button class="menu-tab${i===0?' active':''}" onclick="showMTab('${t.id}',this)">${t.label}</button>`
+  ).join('');
+  document.getElementById('menu-panels').innerHTML = tabs.map((t,i)=>
+    `<div id="tab-${t.id}" class="menu-panel${i===0?' active':''}">${buildPanel(t.id)}</div>`
+  ).join('');
+}
+
+function buildPanel(id){
+  if(id==='caffetteria') return buildList(S.caffetteria,'Bevande & Caffetteria');
+  if(id==='te'){
+    const pu = S.tePrezzoUnico ? `<span style="font-family:'Playfair Display',serif;color:var(--caramel);font-size:0.95rem">${h(S.tePrezzoUnico)} cad.</span>` : '';
+    return `<div class="menu-category">
+      <div class="menu-category-title">Selezione Tè e Tisane ${pu}</div>
+      ${S.te.map(it=>`<div class="menu-item">
+        <div class="menu-item-name">${h(it.n)}</div>
+        <div class="menu-item-price">${h(it.p)}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+  if(id==='dolci') return buildList(S.dolci,'Dolci & Brioches');
+  if(id==='pranzo') return buildPranzo();
+  if(id==='aperitivo'){
+    const ap=S.aperitivo;
+    return `<div class="aperitivo-banner">
+      <div><h3>Aperitivo Ricco</h3><p>${h(ap.giorno)}, servito al tavolo.</p></div>
+      <div class="aperitivo-price">${h(ap.prezzo)}<small>Prima consumazione</small></div>
+    </div>
+    <p style="font-style:italic;color:var(--caramel);font-size:0.95rem;line-height:1.7">${h(ap.desc)}</p>`;
+  }
+  return '';
+}
+
+function buildList(items, title){
+  return `<div class="menu-category">
+    <div class="menu-category-title">${title}</div>
+    ${items.map(it=>`<div class="menu-item">
+      <div>
+        <div class="menu-item-name">${h(it.n)}</div>
+        ${it.d?`<div class="menu-item-detail">${h(it.d)}</div>`:''}
+      </div>
+      <div class="menu-item-price">${h(it.p||'')}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function buildPranzo(){
+  const primi   = S.caldi.filter(x=>x.d.toLowerCase()==='primo');
+  const secondi = S.caldi.filter(x=>x.d.toLowerCase()==='secondo');
+  const other   = S.caldi.filter(x=>x.d.toLowerCase()!=='primo'&&x.d.toLowerCase()!=='secondo');
+  let caldiHtml = `<div class="menu-category"><div class="menu-category-title">Piatti Caldi – Menù della settimana</div>`;
+  if(primi.length)   caldiHtml += `<div class="menu-sub-label">Primi</div>`   + primi.map(rowItem).join('');
+  if(secondi.length) caldiHtml += `<div class="menu-sub-label" style="margin-top:0.8rem">Secondi</div>` + secondi.map(rowItem).join('');
+  if(other.length)   caldiHtml += other.map(rowItem).join('');
+  caldiHtml += '</div>';
+  return `
+    <div class="menu-note">
+      Dal Lunedì al Venerdì, dalle 12:00 alle 14:30.<br>
+      0,5 L acqua inclusa nel prezzo con una spesa minima di € 7,00.<br>
+      <em>Comunicare eventuali intolleranze o allergie alimentari al momento dell'ordinazione.</em>
+    </div>
+    ${buildList(S.pf,'Sandwich, Toast & Pizza')}
+    ${buildList(S.ins,'Insalatone')}
+    ${caldiHtml}
+    <div class="menu-set">
+      <h4>Menù Fissi</h4>
+      <div class="menu-set-item">
+        <div><div>Menù Primo</div><div class="menu-set-detail">Primo piatto + 0,5 L acqua + caffè + piatto</div></div>
+        <span>€ 8,00</span>
+      </div>
+      <div class="menu-set-item">
+        <div><div>Menù Secondo</div><div class="menu-set-detail">Secondo o piatto unico + 0,5 L acqua + caffè + piatto</div></div>
+        <span>€ 9,00</span>
+      </div>
+      <div class="menu-set-item">
+        <div><div>Menù Completo</div><div class="menu-set-detail">Primo + Secondo + 0,5 L acqua + caffè + piatto</div></div>
+        <span>€ 15,00</span>
+      </div>
+    </div>
+    ${buildList(S.bev,'Bevande')}
+  `;
+}
+
+function rowItem(it){
+  return `<div class="menu-item">
+    <div class="menu-item-name">${h(it.n)}</div>
+    <div class="menu-item-price">${h(it.p||'')}</div>
+  </div>`;
+}
+
+/* --- CONTATTI --- */
+function renderContatti(){
+  const c=S.contatti;
+  document.getElementById('ct-indirizzo-display').innerHTML = h(c.indirizzo||'').replace(/\n/g,'<br>');
+  document.getElementById('ct-recapiti-display').innerHTML =
+    `Tel: <a href="tel:${h(c.tel)}">${h(c.tel)}</a><br>Email: <a href="mailto:${h(c.email)}">${h(c.email)}</a><br><br>`+
+    `Per l'<strong style="color:var(--gold)">Aperitivo del Venerdì</strong><br>è consigliata la prenotazione.`;
+  document.getElementById('ct-fb-link').href = c.fb||'#';
+  document.getElementById('ct-ig-link').href = c.ig||'#';
+}
+
+function showMTab(id,btn){
+  document.querySelectorAll('.menu-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function h(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ════════════════════ ADMIN AUTH ════════════════════ */
+function openAdminLogin(){
+  document.getElementById('admin-overlay').classList.add('open');
+  document.getElementById('admin-pw-input').value='';
+  document.getElementById('admin-pw-error').style.display='none';
+  if(sessionStorage.getItem('lp_admin')==='1') showAdminContent();
+  else {
+    document.getElementById('admin-login-screen').style.display='block';
+    document.getElementById('admin-content').style.display='none';
+    setTimeout(()=>document.getElementById('admin-pw-input').focus(),100);
+  }
+}
+function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('open'); }
+function checkPw(){
+  if(document.getElementById('admin-pw-input').value===ADMIN_PW){
+    sessionStorage.setItem('lp_admin','1');
+    showAdminContent();
+  } else {
+    document.getElementById('admin-pw-error').style.display='block';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+function showAdminContent(){
+  document.getElementById('admin-login-screen').style.display='none';
+  document.getElementById('admin-content').style.display='block';
+  populateAdmin();
+}
+
+/* ════════════════════ ADMIN TABS ════════════════════ */
+function aTab(id,btn){
+  document.querySelectorAll('.admin-sub').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById('asub-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ════════════════════ POPULATE ADMIN ════════════════════ */
+function populateAdmin(){
+  // ORARI
+  document.getElementById('orari-admin-list').innerHTML = S.orari.map((r,i)=>`
+    <div class="orari-admin-row">
+      <input type="text" value="${h(r.g)}" onchange="S.orari[${i}].g=this.value">
+      <input type="text" value="${h(r.t)}" onchange="S.orari[${i}].t=this.value">
+      <label class="orari-check-label">
+        <input type="checkbox" ${r.chiuso?'checked':''} onchange="S.orari[${i}].chiuso=this.checked;renderOrari()"> Chiuso
+      </label>
+      <label class="orari-check-label" style="color:rgba(201,168,76,0.6)">
+        <input type="checkbox" ${r.hl?'checked':''} onchange="S.orari[${i}].hl=this.checked;renderOrari()"> &#9733;
+      </label>
+    </div>`).join('');
+  document.getElementById('admin-orari-note').value = S.orariNote||'';
+
+  // lists
+  renderAdminList('caffetteria','list-caffetteria',true);
+  document.getElementById('admin-te-prezzo').value = S.tePrezzoUnico||'';
+  renderAdminListTe();
+  renderAdminList('dolci','list-dolci',true);
+  renderAdminList('pf','list-pf',true);
+  renderAdminList('ins','list-ins',true);
+  renderAdminList('caldi','list-caldi',true);
+  renderAdminListSimple('bev','list-bev');
+
+  // APERITIVO
+  document.getElementById('admin-ap-giorno').value = S.aperitivo.giorno||'';
+  document.getElementById('admin-ap-prezzo').value = S.aperitivo.prezzo||'';
+  document.getElementById('admin-ap-desc').value   = S.aperitivo.desc||'';
+
+  // CONTATTI
+  document.getElementById('admin-ct-indirizzo').value = S.contatti.indirizzo||'';
+  document.getElementById('admin-ct-tel').value   = S.contatti.tel||'';
+  document.getElementById('admin-ct-email').value = S.contatti.email||'';
+  document.getElementById('admin-ct-fb').value    = S.contatti.fb||'';
+  document.getElementById('admin-ct-ig').value    = S.contatti.ig||'';
+}
+
+function renderAdminList(key, containerId, hasDetail){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = S[key].map((it,i)=>`
+    <div class="admin-item-row ${hasDetail?'cols-4':'cols-3'}">
+      <input type="text" value="${h(it.n)}" placeholder="Nome" onchange="S['${key}'][${i}].n=this.value">
+      ${hasDetail ? `<input type="text" value="${h(it.d||'')}" placeholder="Descrizione" onchange="S['${key}'][${i}].d=this.value">` : ''}
+      <input type="text" value="${h(it.p||'')}" placeholder="€" onchange="S['${key}'][${i}].p=this.value">
+      <button class="admin-item-del" onclick="delItem('${key}',${i},'${containerId}',${hasDetail})" title="Elimina">&#128465;</button>
+    </div>`).join('');
+}
+
+function renderAdminListSimple(key, containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = S[key].map((it,i)=>`
+    <div class="admin-item-row cols-3">
+      <input type="text" value="${h(it.n)}" placeholder="Nome" onchange="S['${key}'][${i}].n=this.value">
+      <input type="text" value="${h(it.p||'')}" placeholder="Prezzo" onchange="S['${key}'][${i}].p=this.value">
+      <button class="admin-item-del" onclick="delItemSimple('${key}',${i},'${containerId}')" title="Elimina">&#128465;</button>
+    </div>`).join('');
+}
+
+function renderAdminListTe(){
+  const el = document.getElementById('list-te');
+  if(!el) return;
+  el.innerHTML = S.te.map((it,i)=>`
+    <div class="admin-item-row cols-3">
+      <input type="text" value="${h(it.n)}" placeholder="Nome" onchange="S.te[${i}].n=this.value">
+      <input type="text" value="${h(it.p||'')}" placeholder="Prezzo ind. (opz.)" onchange="S.te[${i}].p=this.value">
+      <button class="admin-item-del" onclick="delItemTe(${i})" title="Elimina">&#128465;</button>
+    </div>`).join('');
+}
+
+function delItem(key,i,cid,hd){ S[key].splice(i,1); renderAdminList(key,cid,hd); }
+function delItemSimple(key,i,cid){ S[key].splice(i,1); renderAdminListSimple(key,cid); }
+function delItemTe(i){ S.te.splice(i,1); renderAdminListTe(); }
+
+/* ════════════════════ ADD ITEMS ════════════════════ */
+const ADD_CFG = {
+  caffetteria: {ids:['a-caff-name','a-caff-detail','a-caff-price'], cid:'list-caffetteria', hd:true, key:'caffetteria'},
+  dolci:       {ids:['a-dolci-name','a-dolci-detail','a-dolci-price'], cid:'list-dolci', hd:true, key:'dolci'},
+  pf:          {ids:['a-pf-name','a-pf-detail','a-pf-price'], cid:'list-pf', hd:true, key:'pf'},
+  ins:         {ids:['a-ins-name','a-ins-detail','a-ins-price'], cid:'list-ins', hd:true, key:'ins'},
+  caldi:       {ids:['a-pc-name','a-pc-detail','a-pc-price'], cid:'list-caldi', hd:true, key:'caldi'},
+};
+
+function addItem(type){
+  if(type==='te'){
+    const n = document.getElementById('a-te-name').value.trim();
+    const p = document.getElementById('a-te-price').value.trim();
+    if(!n) return;
+    S.te.push({n,p});
+    document.getElementById('a-te-name').value='';
+    document.getElementById('a-te-price').value='';
+    renderAdminListTe();
+    return;
+  }
+  if(type==='bev'){
+    const n = document.getElementById('a-bev-name').value.trim();
+    const p = document.getElementById('a-bev-price').value.trim();
+    if(!n) return;
+    S.bev.push({n,p});
+    document.getElementById('a-bev-name').value='';
+    document.getElementById('a-bev-price').value='';
+    renderAdminListSimple('bev','list-bev');
+    return;
+  }
+  const cfg = ADD_CFG[type];
+  if(!cfg) return;
+  const n = document.getElementById(cfg.ids[0]).value.trim();
+  const d = document.getElementById(cfg.ids[1]).value.trim();
+  const p = document.getElementById(cfg.ids[2]).value.trim();
+  if(!n) return;
+  S[cfg.key].push({n,d,p});
+  document.getElementById(cfg.ids[0]).value='';
+  document.getElementById(cfg.ids[1]).value='';
+  document.getElementById(cfg.ids[2]).value='';
+  renderAdminList(cfg.key, cfg.cid, cfg.hd);
+}
+
+/* ════════════════════ SAVE ════════════════════ */
+function saveAll(){
+  // orari note
+  S.orariNote = document.getElementById('admin-orari-note').value;
+  // te prezzo
+  S.tePrezzoUnico = document.getElementById('admin-te-prezzo').value;
+  // aperitivo
+  S.aperitivo = {
+    giorno: document.getElementById('admin-ap-giorno').value,
+    prezzo: document.getElementById('admin-ap-prezzo').value,
+    desc:   document.getElementById('admin-ap-desc').value,
+  };
+  // contatti
+  S.contatti = {
+    indirizzo: document.getElementById('admin-ct-indirizzo').value,
+    tel:   document.getElementById('admin-ct-tel').value,
+    email: document.getElementById('admin-ct-email').value,
+    fb:    document.getElementById('admin-ct-fb').value,
+    ig:    document.getElementById('admin-ct-ig').value,
+  };
+  persist();
+  renderSite();
+  const st = document.getElementById('save-status');
+  st.className='save-status ok';
+  st.textContent='✓ Salvato!';
+  setTimeout(()=>{ st.textContent=''; st.className='save-status'; },3000);
+}
+
+/* ════════════════════ INIT ════════════════════ */
+renderSite();
+</script>
+</body>
+</html>
