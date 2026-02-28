@@ -103,15 +103,65 @@
     .orari-time { font-family:'Playfair Display',serif; font-size:1rem; color:var(--caramel); }
     .badge { display:inline-block; font-family:'Cinzel',serif; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); border:1px solid var(--gold); padding:0.18rem 0.45rem; margin-left:0.7rem; }
     .orari-note { margin-top:1.5rem; font-style:italic; font-size:0.88rem; color:var(--caramel); border-left:2px solid var(--gold); padding-left:1rem; line-height:1.7; }
-    .services-row { display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:2rem; }
-    .service-tag { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; border:1px solid rgba(139,94,60,0.3); padding:0.45rem 0.9rem; color:var(--caramel); }
+    /* SERVICE BUTTONS */
+    .services-row { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-top:2rem; }
+    .service-tag {
+      font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+      border:1px solid rgba(139,94,60,0.3); padding:0.85rem 1rem; color:var(--caramel);
+      background:none; cursor:pointer; display:flex; align-items:center; gap:0.6rem;
+      transition:all 0.22s; text-align:left; font-family:'Cinzel',serif;
+    }
+    .service-tag:hover {
+      background:var(--espresso); color:var(--crema); border-color:var(--espresso);
+      transform:translateY(-2px); box-shadow:0 4px 16px rgba(44,26,14,0.15);
+    }
+    .service-tag .st-icon { font-size:1.1rem; flex-shrink:0; }
+    .service-tag:last-child:nth-child(odd) { grid-column: 1 / -1; max-width:50%; }
 
     /* MENU */
     #menu { background:var(--warm-white); }
-    .menu-tabs { display:flex; margin-bottom:3rem; border-bottom:1px solid rgba(139,94,60,0.2); overflow-x:auto; }
-    .menu-tab { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--caramel); padding:0.8rem 1.3rem; cursor:pointer; border:none; border-bottom:2px solid transparent; background:none; transition:all 0.2s; white-space:nowrap; }
+
+    /* Tab nav wrapper with arrows */
+    .menu-tabs-wrapper {
+      position:relative; margin-bottom:3rem;
+    }
+    .menu-tabs-scroll {
+      display:flex; overflow-x:auto; scroll-behavior:smooth;
+      border-bottom:1px solid rgba(139,94,60,0.2);
+      scrollbar-width:none; -ms-overflow-style:none;
+    }
+    .menu-tabs-scroll::-webkit-scrollbar { display:none; }
+
+    /* Desktop: tab grid (no scroll needed) */
+    @media(min-width:641px) {
+      .menu-tabs-scroll {
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        overflow:visible;
+      }
+      .menu-nav-arrow { display:none !important; }
+    }
+
+    /* Arrow buttons */
+    .menu-nav-arrow {
+      position:absolute; top:0; bottom:1px; width:40px;
+      display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(to right, var(--warm-white) 60%, transparent);
+      border:none; cursor:pointer; z-index:2; color:var(--caramel);
+      font-size:1.1rem; padding:0; transition:color 0.2s;
+    }
+    .menu-nav-arrow:hover { color:var(--espresso); }
+    .menu-nav-arrow.left { left:0; background:linear-gradient(to right, var(--warm-white) 60%, transparent); }
+    .menu-nav-arrow.right { right:0; background:linear-gradient(to left, var(--warm-white) 60%, transparent); }
+
+    .menu-tab {
+      font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--caramel); padding:0.9rem 1.3rem; cursor:pointer; border:none;
+      border-bottom:2px solid transparent; background:none; transition:all 0.2s;
+      white-space:nowrap; flex-shrink:0; text-align:center;
+    }
     .menu-tab:hover { color:var(--espresso); }
-    .menu-tab.active { color:var(--espresso); border-bottom-color:var(--gold); }
+    .menu-tab.active { color:var(--espresso); border-bottom-color:var(--gold); background:rgba(201,168,76,0.04); }
     .menu-panel { display:none; }
     .menu-panel.active { display:block; animation:fadeUp 0.35s ease; }
     .menu-category { margin-bottom:2.5rem; }
@@ -221,6 +271,11 @@
       .orari-admin-row { grid-template-columns:1fr 1fr auto auto; }
       .orari-row { padding:0.9rem 1rem; }
       .admin-item-row.cols-4 { grid-template-columns:1fr 80px auto; }
+      /* service buttons: full width on very small screens */
+      .services-row { grid-template-columns:1fr; }
+      .service-tag:last-child:nth-child(odd) { grid-column:auto; max-width:100%; }
+      /* menu tabs: scroll with side padding so first/last are reachable */
+      .menu-tabs-scroll { padding:0 40px; }
     }
   </style>
 </head>
@@ -259,11 +314,11 @@
     <div class="orari-grid" id="orari-table"></div>
     <p class="orari-note" id="orari-note-display" style="display:none"></p>
     <div class="services-row">
-      <span class="service-tag">&#9749; Colazioni</span>
-      <span class="service-tag">&#127860; Pausa Pranzo</span>
-      <span class="service-tag">&#127838; Merende</span>
-      <span class="service-tag">&#127865; Aperitivi</span>
-      <span class="service-tag">&#127874; Feste di Compleanno</span>
+      <button class="service-tag" onclick="goToMenuTab('caffetteria')"><span class="st-icon">&#9749;</span> Colazioni</button>
+      <button class="service-tag" onclick="goToMenuTab('pranzo')"><span class="st-icon">&#127860;</span> Pausa Pranzo</button>
+      <button class="service-tag" onclick="goToMenuTab('dolci')"><span class="st-icon">&#127838;</span> Merende</button>
+      <button class="service-tag" onclick="goToMenuTab('aperitivo')"><span class="st-icon">&#127865;</span> Aperitivi</button>
+      <button class="service-tag" onclick="document.getElementById('contatti').scrollIntoView({behavior:'smooth'})"><span class="st-icon">&#127874;</span> Feste di Compleanno</button>
     </div>
   </div>
 </section>
@@ -274,7 +329,11 @@
     <p class="section-label">La nostra proposta</p>
     <h2 class="section-title">Il Menù</h2>
     <div class="section-rule"></div>
-    <div class="menu-tabs" id="menu-tabs-bar"></div>
+    <div class="menu-tabs-wrapper">
+      <button class="menu-nav-arrow left" id="arrow-left" onclick="scrollMenuTabs(-1)" aria-label="Scorri sinistra">&#8592;</button>
+      <div class="menu-tabs-scroll" id="menu-tabs-bar"></div>
+      <button class="menu-nav-arrow right" id="arrow-right" onclick="scrollMenuTabs(1)" aria-label="Scorri destra">&#8594;</button>
+    </div>
     <div id="menu-panels"></div>
   </div>
 </section>
@@ -620,11 +679,12 @@ function renderMenu(){
     {id:'aperitivo',   label:'Aperitivo'},
   ];
   document.getElementById('menu-tabs-bar').innerHTML = tabs.map((t,i)=>
-    `<button class="menu-tab${i===0?' active':''}" onclick="showMTab('${t.id}',this)">${t.label}</button>`
+    `<button class="menu-tab${i===0?' active':''}" data-tab="${t.id}" onclick="showMTab('${t.id}',this)">${t.label}</button>`
   ).join('');
   document.getElementById('menu-panels').innerHTML = tabs.map((t,i)=>
     `<div id="tab-${t.id}" class="menu-panel${i===0?' active':''}">${buildPanel(t.id)}</div>`
   ).join('');
+  updateArrows();
 }
 
 function buildPanel(id){
@@ -725,6 +785,45 @@ function showMTab(id,btn){
   document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
+  // scroll the active tab into view within the scroll container
+  const scroller = document.getElementById('menu-tabs-bar');
+  if(scroller && btn) {
+    const btnLeft = btn.offsetLeft;
+    const btnWidth = btn.offsetWidth;
+    const scrollW = scroller.offsetWidth;
+    scroller.scrollTo({ left: btnLeft - scrollW/2 + btnWidth/2, behavior:'smooth' });
+  }
+  updateArrows();
+}
+
+function scrollMenuTabs(dir){
+  const scroller = document.getElementById('menu-tabs-bar');
+  if(!scroller) return;
+  scroller.scrollBy({ left: dir * 180, behavior:'smooth' });
+  setTimeout(updateArrows, 300);
+}
+
+function updateArrows(){
+  const scroller = document.getElementById('menu-tabs-bar');
+  const left  = document.getElementById('arrow-left');
+  const right = document.getElementById('arrow-right');
+  if(!scroller||!left||!right) return;
+  const atStart = scroller.scrollLeft <= 4;
+  const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 4;
+  left.style.opacity  = atStart ? '0.2' : '1';
+  right.style.opacity = atEnd   ? '0.2' : '1';
+  left.style.pointerEvents  = atStart ? 'none' : 'auto';
+  right.style.pointerEvents = atEnd   ? 'none' : 'auto';
+}
+
+function goToMenuTab(tabId){
+  // scroll to menu section
+  document.getElementById('menu').scrollIntoView({behavior:'smooth'});
+  // activate the right tab after a brief delay (let scroll settle)
+  setTimeout(()=>{
+    const btn = document.querySelector(`.menu-tab[data-tab="${tabId}"]`);
+    if(btn) showMTab(tabId, btn);
+  }, 400);
 }
 
 function h(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -916,6 +1015,8 @@ function saveAll(){
 
 /* ════════════════════ INIT ════════════════════ */
 renderSite();
+// hook scroll on tabs container for arrow visibility
+document.getElementById('menu-tabs-bar').addEventListener('scroll', updateArrows);
 </script>
 </body>
 </html>
