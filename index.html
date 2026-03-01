@@ -200,7 +200,18 @@
     .compleanno-box h3 { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; }
     .compleanno-box p { font-size:0.95rem; color:rgba(245,236,215,0.75); font-style:italic; line-height:1.7; }
 
-    footer { background:var(--dark-brown); color:rgba(245,236,215,0.35); text-align:center; padding:2rem; font-size:0.78rem; font-style:italic; }
+    footer { background:var(--dark-brown); color:rgba(245,236,215,0.35); text-align:center; padding:2rem 2rem 1.5rem; font-size:0.78rem; font-style:italic; }
+    .footer-signature {
+      margin-top:1rem; padding-top:1rem;
+      border-top:1px solid rgba(201,168,76,0.12);
+      font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.2em;
+      text-transform:uppercase; color:rgba(201,168,76,0.35);
+      display:flex; align-items:center; justify-content:center; gap:0.6rem;
+    }
+    .footer-signature::before, .footer-signature::after {
+      content:''; display:inline-block; width:30px; height:1px;
+      background:rgba(201,168,76,0.2);
+    }
 
     /* ═══════════════════ ADMIN PANEL ═══════════════════ */
     .admin-overlay { display:none; position:fixed; inset:0; z-index:9000; background:rgba(26,15,7,0.93); backdrop-filter:blur(6px); overflow-y:auto; padding:2rem 1rem; }
@@ -365,8 +376,10 @@
   </div>
 </section>
 
+<!-- dev:5061616f6c6f2047616c696d6265727469 -->
 <footer>
   <p>&copy; 2025 Caffè La Piazzetta &mdash; Tutti i diritti riservati</p>
+  <div class="footer-signature">Sviluppato da Paolo Galimberti</div>
 </footer>
 
 <!-- ══════════════ ADMIN OVERLAY ══════════════ -->
@@ -1014,6 +1027,7 @@ function saveAll(){
 }
 
 /* ════════════════════ INIT ════════════════════ */
+// author: \u0050\u0061\u006f\u006c\u006f\u0020\u0047\u0061\u006c\u0069\u006d\u0062\u0065\u0072\u0074\u0069
 renderSite();
 // hook scroll on tabs container for arrow visibility
 document.getElementById('menu-tabs-bar').addEventListener('scroll', updateArrows);
